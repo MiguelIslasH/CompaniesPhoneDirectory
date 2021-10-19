@@ -1,37 +1,30 @@
-import { logging } from "near-sdk-as";
+import { phoneDirectory, Company } from "./models/company";
 
-import { MaleName, maleNames } from "./models/maleNames";
-import { FemaleName, femaleNames } from "./models/femaleNames";
-import { Genre } from "./models/enums";
-
-export function saveName(
+export function registerCompany(
   creatorId: string,
   name: string,
-  genre: number
+  phone: string
 ): string {
-  if (genre === 0) {
-    const maleName = new MaleName(creatorId, name);
-    maleNames.push(maleName);
-  } else {
-    const femaleName = new FemaleName(creatorId, name);
-    femaleNames.push(femaleName);
-  }
-  logging.log(maleNames);
-  logging.log(femaleNames);
-  return name + " has been saved! by " + creatorId;
+  const company = new Company(creatorId, name, phone);
+  phoneDirectory.push(company);
+  return "Company " + name + " has been registered! by " + creatorId;
 }
 
-export function getName(): string {
-  const vectorExampleMale = ["Pedro", "Juanito", "Ramiro"];
-  const vectorExampleFemale = ["Ana", "Gabriela", "Samantha"];
-  let genre = 0;
-
-  let randomInt: number;
-  if (genre === 0) {
-    randomInt = Math.random() * vectorExampleFemale.length;
-    return vectorExampleMale[randomInt as i32];
-  } else {
-    randomInt = Math.random() * vectorExampleMale.length;
-    return vectorExampleFemale[randomInt as i32];
+export function getCompaniesData(): Array<Company> {
+  let companies = new Array<Company>(phoneDirectory.length);
+  for (let i = 0; i < phoneDirectory.length; i++) {
+    let company = phoneDirectory[i];
+    companies[i] = company;
   }
+  return companies;
+}
+
+export function getCompany(name: string): Company {
+  for (let i = 0; i < phoneDirectory.length; i++) {
+    let company = phoneDirectory[i];
+    if (company.name == name) {
+      return company;
+    }
+  }
+  return new Company("", "", "");
 }
