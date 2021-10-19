@@ -1,26 +1,37 @@
-import { storage, Context } from "near-sdk-as"
+import { logging } from "near-sdk-as";
 
-// return the string 'hello world'
-export function helloWorld(): string {
-  return 'hello world'
-}
+import { MaleName, maleNames } from "./models/maleNames";
+import { FemaleName, femaleNames } from "./models/femaleNames";
+import { Genre } from "./models/enums";
 
-// read the given key from account (contract) storage
-export function read(key: string): string {
-  if (storage.hasKey(key)) {
-    return `✅ Key [ ${key} ] has value [ ${storage.getString(key)!} ]`
+export function saveName(
+  creatorId: string,
+  name: string,
+  genre: number
+): string {
+  if (genre === 0) {
+    const maleName = new MaleName(creatorId, name);
+    maleNames.push(maleName);
   } else {
-    return `🚫 Key [ ${key} ] not found in storage. ( ${storageReport()} )`
+    const femaleName = new FemaleName(creatorId, name);
+    femaleNames.push(femaleName);
   }
+  logging.log(maleNames);
+  logging.log(femaleNames);
+  return name + " has been saved! by " + creatorId;
 }
 
-// write the given value at the given key to account (contract) storage
-export function write(key: string, value: string): string {
-  storage.set(key, value)
-  return `✅ Data saved. ( ${storageReport()} )`
-}
+export function getName(): string {
+  const vectorExampleMale = ["Pedro", "Juanito", "Ramiro"];
+  const vectorExampleFemale = ["Ana", "Gabriela", "Samantha"];
+  let genre = 0;
 
-// private helper method used by read() and write() above
-function storageReport(): string {
-  return `storage [ ${Context.storageUsage} bytes ]`
+  let randomInt: number;
+  if (genre === 0) {
+    randomInt = Math.random() * vectorExampleFemale.length;
+    return vectorExampleMale[randomInt as i32];
+  } else {
+    randomInt = Math.random() * vectorExampleMale.length;
+    return vectorExampleFemale[randomInt as i32];
+  }
 }
